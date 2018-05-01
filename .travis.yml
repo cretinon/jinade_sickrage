@@ -1,0 +1,27 @@
+os: linux
+dist: trusty
+cache: false
+sudo: required
+language: bash
+services: docker
+env:
+  matrix:
+    - ARCH=x86_64 DISTRIB=debian
+    - ARCH=x86_64 DISTRIB=alpine
+    - ARCH=armhf DISTRIB=debian
+    - ARCH=armhf DISTRIB=alpine
+  global:
+  - secure: sADUhFWUEjteaTdIvBXwal+PrXwtNHSfOIzx4cYcrqLgCMjPLP0RmuP48jmaKKDbEQ41yjOqzgkdIaEZSqckTFGsrZwll75Hzn+RBiXqaUqUrFsgHUq+3OsTku3q2zdpISAi0Af1QYfPYgPkWmNwo8aeFRu6+ebcL3XRpd+JbKWwCBmXnz3BXtccHT2u6KBLzALHIjU43pR3FmPiNZo/MhNl/hbh7AWvTRQANBGexelC1SPazqIsVC7nZZhfhRhdfBtvu/5yGbI/trau78acKpG3FJ/BAqSksOpEmdDYrJ5mU3nPC82RpGnn8Y40pC905HCCxRsezWVavh4wrvjz8pPfs6oOwoQoo+qhDd/c2K5YSCGPqsNeU6X9hkhg8vM+mjpxmXX65KuZW6zOofdgw0eITEjrqLbcWRxb8HGRjzq2pxaSGkX8xlo16xy0ZqBHikvhaXuOCt6TCgg5s9QVdigpiR+P4snTO4WTuKwSiUsBuc8jv1OgCrXWtZRryks6ThhvvjMQaOQNPGQrf5n0x/zcMNfOrw40z1m1F2fveMDoOVY1/rtLwKaOzmO+4HnqTR34yqc/+/wcIGPYDAdxF5y/fw0o5NkfEEabF6XUhM9PAVZIv8KYP2MfKmdbLGmS2u4+NfktbSLssNqqFhagDWfWEcElaN2OYHXTa13iF2o=
+  - secure: AIDltVuKkCtUxaNOBoAFkMan+bwyyiYesrcCKnUW+M3lbYMgKOXYdGAU6HOsfAYJnU6WOXRxoHe0Yu5jyWVyilGoGevgpkmGKIQOSFoLH06doAJ6c9MvgTV6P6qlPHtS6IIVTlDvlpWZkV26SYh5VjsOBOxeeoko5IVgb6OsL1l4SF9Ij2kGxWCSaeglJaHuczeaSiI7IJbiPJPLA867csdU651gvXgG29ZqlnlFTa1cNmpG4nvJdvvTqfqivSxNJv1x2cMM9y/jv7Y0m6Qa9DQFMzW4Zf6jW7c9bZsja+Qe4/3nuHkwkVg1yIqohOHqbwOHLmAg2v8NZDiXjM5cNhl/mfUnfqGaa8eht1BBIdy9lVIJ5dBozDoHKZHWYaaABqF3RBXhbo2DuPSEnN/JrrAsfzx7jiAJXUzHTNmboh9QMJViMI0bh/TucWA8HXD/4lguMiHUF2Dlil40+K0reefrUEyb6UGf7QjaOcKI8IsCrChg8wo1AYq1b2VxbZRebW9K3MnDxV+aLOeleytLsnZzA7PAUTEkYFkkyW0rh/vMrw4/wa07cp5Q7SLFRbSwZ7EkDS8z/yp/PBAnA+LK23XD0tC6ct6dRATxNXPBeWOMm3YkeMpBZFjBkcWBdir2b2aRpLs7Q/5sEIB59OkVY+Krjy9oEVbT6fTgvn5nZp0=
+install: true
+before_script:
+- docker --version
+- make --version
+script:
+  - make ARCH=${ARCH} DISTRIB=${DISTRIB} build test
+after_success:
+- docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+- make ARCH=${ARCH} DISTRIB=${DISTRIB} push
+after_script:
+- docker logout
+- make clean
